@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KultuFilms</title>
+
+    <!-- Czcionki -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Doto:wght@100..900&family=Monoton&display=swap" rel="stylesheet">
+        
+    <!-- Ikonka strony -->
+    <link rel="shortcut icon" href="./favicon/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" href="./favicon/favicon-96x96.png" sizes="96x96">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/sidebar.css">
+    <link rel="stylesheet" href="./css/banner.css">
+    <link rel="stylesheet" href="./css/cards.css">
+    <link rel="stylesheet" href="./css/categories.css">
+    <link rel="stylesheet" href="./css/search.css">
+    <link rel="stylesheet" href="./css/comments.css">
+    <link rel="stylesheet" href="./css/details-view.css">
+
+    <!-- JS -->
+    <script src="./scripts/main.js" defer></script> 
+    <script src="./scripts/sidebar.js" defer></script> 
+    <script src="./scripts/cards.js" defer></script> 
+    <script src="./scripts/banner.js" defer></script>
+    <script src="./scripts/categories.js" defer></script>
+    <script src="./scripts/search.js" defer></script>
+    <script src="./scripts/best.js" defer></script>
+    <script src="./scripts/details-view.js" defer></script>
+</head>
+
+<body>
+    <div id="theme-toast">Zmieniono motyw</div>
+    <aside id="sidebar">
+        <nav>
+            <button id="sidebar-toggle">KultuFilms</button>
+            <hr>
+            <ul>
+                <li>
+                    <button class="nav-btn" data-view="home">
+                        <svg width="32" height="32" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 20h4v-6h2v6h4v2H4v-2h4v-6h2v6Zm-6 0H2V10h2v10Zm18 0h-2V10h2v10Zm-8-6h-4v-2h4v2Zm-8-4H4V8h2v2Zm14 0h-2V8h2v2ZM8 8H6V6h2v2Zm10 0h-2V6h2v2Zm-8-2H8V4h2v2Zm6 0h-2V4h2v2Zm-2-2h-4V2h4v2Z" fill="currentColor"/></svg>
+                        <p>Główna</p>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn" data-view="search" id="search-trigger">
+                        <svg width="32" height="32" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22 22h-2v-2h2v2Zm-2-2h-2v-2h2v2Zm-6-2H6v-2h8v2Zm4 0h-2v-2h2v2ZM6 16H4v-2h2v2Zm10 0h-2v-2h2v2ZM4 14H2V6h2v8Zm14 0h-2V6h2v8ZM6 6H4V4h2v2Zm10 0h-2V4h2v2Zm-2-2H6V2h8v2Z" fill="currentColor"/></svg>
+                        <p>Wyszukaj</p>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn" data-view="categories">
+                        <svg width="32" height="32" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 21H4v-2h16v2ZM4 9h4V7h2v2h6V7h2v2h2V5h2v14h-2v-8H4v8H2V5h2v4Zm16-4h-4v2h-2V5H8v2H6V5H4V3h16v2Z" fill="currentColor"/></svg>
+                        <p>Kategorie</p>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn" data-view="best">
+                        <svg width="32" height="32" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 16h2v4h2v2H7v-2h2v-4h2v-2h2v2Zm-6 4H5v-2h2v2Zm12 0h-2v-2h2v2ZM5 18H3v-8h2v8Zm16 0h-2v-6h2v6Zm-6-6h-2v-2h2v2Zm4 0h-2v-2h2v2ZM7 10H5V8h2v2Zm6 0h-2V6h2v4Zm4 0h-2V8h2v2ZM9 8H7V6h2v2Zm2-2H9V2h2v4Z" fill="currentColor"/></svg>
+                        <p>Najlepsze</p>
+                    </button>
+                </li>
+                <hr>
+                <li class="settings-container">
+                    <button class="nav-btn" id="settings-btn">
+                        <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 C9.64,21.83,9.83,22,10.08,22h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                        </svg>
+                        <p>Ustawienia</p>
+                    </button>
+
+                    <div id="settings-dropdown" class="dropdown-menu">
+                        <button class="dropdown-item" id="theme-toggle">Motyw</button>
+                        <button class="dropdown-item" id="font-toggle">Czcionka</button>
+                        <button class="dropdown-item" id="lang-toggle">Język: PL</button>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main>
+        <div id="view-home" class="view-section active">
+            <section id="big-banner">
+                <div id="desc">
+                    <p id="banner-label"></p>
+                    <p id="banner-title"></p>
+                    <p id="banner-desc"></p>
+                    <div id="banner-meta"></div>
+                </div>
+            </section>
+            <section id="movies">
+                <p class="title">Odkrywaj</p>
+                <div class="carousel-wrapper">
+                    <button class="scroll-btn left" onclick="scrollCarousel('discover', -600)">&#10094;</button>
+                    <div class="movie-card-container" id="discover">
+                        <p>Ładowanie filmów...</p>
+                    </div>
+                    <button class="scroll-btn right" onclick="scrollCarousel('discover', 600)">&#10095;</button>
+                </div>
+
+                <p class="title">Najlepiej Oceniane</p>
+                <div class="carousel-wrapper">
+                    <button class="scroll-btn left" onclick="scrollCarousel('top-rated', -600)">&#10094;</button>
+                    <div class="movie-card-container" id="top-rated">
+                        <p>Ładowanie filmów...</p>
+                    </div>
+                    <button class="scroll-btn right" onclick="scrollCarousel('top-rated', 600)">&#10095;</button>
+                </div>
+            </section>
+        </div>
+
+        <div id="view-search" class="view-section">
+            <section class="dynamic-page">
+                <p class="title">Wyszukaj film</p>
+                <br>
+                <input type="text" id="search-input" class="search-input" placeholder="Wpisz tytuł...">
+                <div class="movie-grid" id="search-results"></div>
+            </section>
+        </div>
+
+        <div id="view-categories" class="view-section">
+            <section class="dynamic-page">
+                <p class="title">Wybierz kategorię</p>
+                <div id="category-buttons" class="category-tags"></div>
+                <p class="title" id="category-title" style="display: none; margin-top: 40px;">Wyniki</p>
+                <div class="movie-grid" id="category-results"></div>
+            </section>
+        </div>
+
+        <div id="view-best" class="view-section">
+            <section class="dynamic-page">
+                <p class="title">TOP 10 wszechczasów</p>
+                <div class="movie-grid" id="top10-results"></div>
+                <hr>
+                <p class="title">Najlepsze 11-20</p>
+                <div class="movie-grid" id="top20-results"></div>
+                <hr>
+                <p class="title">Najlepsze 21-30</p>
+                <div class="movie-grid" id="top30-results"></div>
+                <hr>
+                <p class="title">Najlepsze 31-40</p>
+                <div class="movie-grid" id="top40-results"></div>
+                <hr>
+                <p class="title">Najlepsze 41-50</p>
+                <div class="movie-grid" id="top50-results"></div>
+            </section>
+        </div>
+    </main>
+    <div id="movie-details" class="details-overlay">
+        <div class="details-content">
+            <button id="close-modal" class="close-btn">&times;</button>
+            <div class="details-body" id="details-body">
+                
+            </div>
+        </div>
+    </div>
+</body>
+</html>

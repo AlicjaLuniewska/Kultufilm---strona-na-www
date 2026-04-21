@@ -1,0 +1,183 @@
+/* [Zmienne] */
+:root {
+    --main-color: #0e0e0f;
+    --side-bar-color: #141314;
+    --side-bar-shadow: #00000080;
+    --title-text: #fff;
+    --default-text: #fff;
+    --description-color: #aaa;
+    --nav-text: #dadada;
+    --accent-dark: #252323;
+    --accent-light: #302e2e;
+    --scroll-button-bg: #00000080;
+    --scroll-button-accent: #ffffff80;
+    --meta-color: rgb(223, 212, 212);
+    --error-message: #dd6767;
+}
+
+body.light-theme {
+    --main-color: #d3d3d3;
+    --side-bar-color: #f2f2f2;
+    --side-bar-shadow: #0000001a;
+    --title-text: #ffffff;
+    --default-text: #111111;
+    --description-color: #8a8184;
+    --nav-text: #444444;
+    --accent-dark: #e0e0e0;
+    --accent-light: #cccccc;
+    --scroll-button-bg: #dddde0;
+    --scroll-button-accent: #5d5c6180;
+    --meta-color: rgb(0, 0, 0);
+    --error-message: #a81690;
+}
+
+body.high-contrast {
+    --main-color: #000000;
+    --side-bar-color: #000000;
+    --default-text: #ffff00;
+    --title-text: #ffff00;
+    --description-color: #ffffff;
+    --nav-text: #ffffff;
+    --accent-dark: #1a1a1a;
+    --accent-light: #333333;
+    --side-bar-shadow: 2px 0 0 #ffff00; 
+    --meta-color: #ffff00;
+    --error-message: #da1515;
+}
+
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+    transition: background-color 1s ease, color 1s ease, box-shadow 1s ease, fill 1s ease, opacity 1s ease !important;
+}
+
+/* [Ogólne] */ 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    display: flex;
+    height: 100%;
+    background: var(--main-color);
+    color: var(--nav-text);
+    transition: background-color 0.3s, color 0.3s, font-family 0.2s ease-in-out;
+}
+
+body.accessible-font, 
+body.accessible-font *, 
+body.accessible-font button, 
+body.accessible-font input, 
+body.accessible-font p, 
+body.accessible-font h1, 
+body.accessible-font h2, 
+body.accessible-font h3 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+
+main {
+    flex: 1; 
+    min-width: 0;
+}
+
+.view-section {
+    display: none;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.view-section.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dynamic-page {
+    padding: 30px;
+}
+
+.dynamic-page hr {
+    border: none;
+    height: 4px;
+    width: 95%;
+    margin: 40px auto;
+
+    background-image: radial-gradient(circle, var(--default-text) 25%, transparent 25%);
+    background-position: center;
+    background-size: 12px 4px; 
+    background-repeat: repeat-x;
+}
+
+#theme-toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: rgb(167, 135, 88);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: bold;
+    z-index: 9999;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+#theme-toast.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+.error-message {
+    width: 100vh;
+    text-align: center;
+    align-self: center;
+    padding: 50px;
+    color: var(--error-message);
+    font-family: "Doto", sans-serif;
+    font-size: 24px;
+}
+
+body.accessible-font {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+body.accessible-font p, 
+body.accessible-font span, 
+body.accessible-font div {
+    letter-spacing: 0.5px;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    body {
+        display: block; 
+        padding-bottom: 70px; 
+    }
+
+    main {
+        width: 100%;
+    }
+
+    .dynamic-page {
+        padding: 15px;
+    }
+
+    .dynamic-page hr {
+        margin: 20px auto; 
+    }
+
+    #theme-toast {
+        width: 90%;
+        font-size: 14px;
+        padding: 10px 15px;
+    }
+}

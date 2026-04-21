@@ -1,0 +1,132 @@
+main {
+    width: 100%;
+}
+
+#big-banner {
+    position: relative; 
+    height: 40vh; 
+    background-color: var(--main-color);
+    overflow: hidden;
+    background-size: cover;          
+    animation: panBanner 40s ease-in-out infinite;
+    transition: background-image 0.2s ease-in-out;
+    
+    display: flex;
+    align-items: flex-end;
+}
+
+#big-banner::before, #big-banner::after {
+    content: ""; 
+    position: absolute;
+    bottom: -1px; 
+    left: 0;
+    width: 100%;
+    height: 100%; 
+    z-index: 1;
+    pointer-events: none; 
+    transition: opacity 0.5s ease-in-out !important;
+}
+
+#big-banner::before {
+    background: 
+        linear-gradient(to top, #0e0e0f 0%, #0e0e0f 5%, transparent 100%);
+    opacity: 1; 
+}
+
+#big-banner::after {
+    background: 
+        linear-gradient(to top, #d3d3d3 0%, #d3d3d3 5%, transparent 100%);
+    opacity: 0; 
+}
+
+body.light-theme #big-banner::before {
+    opacity: 0; 
+}
+
+body.light-theme #big-banner::after {
+    opacity: 1; 
+}
+
+@keyframes panBanner {
+    0% { background-position: center 0%; }   
+    50% { background-position: center 100%; } 
+    100% { background-position: center 0%; } 
+}
+
+#desc {
+    padding: 340px 0px 0px 30px;
+    width: 100%;
+    max-width: 800px;
+    z-index: 2;
+}
+
+#banner-label {
+    font-size: 12px;
+    color: var(--description-color);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+#banner-title {
+    font-size: 48px;
+    font-weight: bold;
+    color: var(--title-text);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5); 
+    margin-bottom: 15px;
+}
+
+#banner-desc {
+    font-size: 16px;
+    color: var(--description-color);
+    line-height: 1.5;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; 
+    -webkit-box-orient: vertical;
+}
+
+#banner-meta {
+    display: flex;
+    margin-top: 20px;
+    color: var(--meta-color);
+    
+    font-size: 16px;
+    font-family: "Doto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+}
+
+/* [Style Mobilne dla Bannera] */
+@media (max-width: 768px) {
+    #big-banner {
+        height: 45vh; 
+        animation: none; 
+        background-position: center center !important;
+    }
+
+    #desc {
+        padding: 20px; 
+        width: 100%;
+        background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+    }
+
+    #banner-title {
+        font-size: 28px; 
+        line-height: 1.1;
+    }
+
+    #banner-desc {
+        font-size: 14px;
+        -webkit-line-clamp: 2;
+    }
+
+    #banner-meta {
+        font-size: 14px;
+        margin-top: 15px;
+        gap: 15px;
+    }
+
+    #banner-label {
+        font-size: 10px;
+    }
+}

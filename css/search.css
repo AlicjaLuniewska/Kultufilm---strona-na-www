@@ -1,0 +1,21 @@
+.search-input {
+    width: 100%;
+    max-width: 600px;
+    padding: 15px 20px;
+    font-size: 18px;
+    border-radius: 30px;
+    border: none;
+    background: var(--accent-dark);
+    color: var(--default-text);
+    outline: none;
+    margin-bottom: 30px;
+
+    font-family: "Doto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 1000;
+}
+
+.search-input:focus {
+    background: var(--accent-light);
+}
+
