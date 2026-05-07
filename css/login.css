@@ -62,3 +62,26 @@
     width: 100%;
     margin-bottom: 20px;
 }
+.profile-container {
+    max-width: 400px;
+    margin: 30px auto;
+    padding: 25px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    text-align: center;
+}
+
+.profile-container h2 {
+    margin-bottom: 15px;
+    font-size: 28px;
+}
+
+.profile-container p {
+    margin-bottom: 20px;
+    opacity: 0.8;
+}
+
+#logout-btn {
+    margin-top: 15px;
+}
