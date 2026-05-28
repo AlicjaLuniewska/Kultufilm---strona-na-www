@@ -1,143 +1,98 @@
-.comments-section, 
-.recommendations-section {
+/*
+ * comments.css
+ * Zaktualizowany arkusz stylów dla sekcji komentarzy w widoku szczegółów filmu.
+ * Zapewnia estetyczne odstępy, czytelność i nowoczesny wygląd.
+ */
+
+.comments-section {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; 
-    height: 100%;           
+    height: 100%;
+    
+    /* Główne marginesy wewnętrzne – to rozwiązuje Twój problem */
+    padding: 20px 30px; 
+    
+    background-color: var(--accent-dark, #141414); /* Możesz dostosować tło pod kolor modala */
+    border-radius: 12px; /* Zaokrąglone narożniki całej sekcji */
+    box-sizing: border-box; /* Zapewnia poprawne obliczanie marginesów */
 }
 
-/* [Komentarze] */
-.comments-section h3, .recommendations-section h3 {
-    margin-top: 0; 
-    margin-bottom: 15px;
+/* Tytuł "Opinie społeczności" */
+.comments-section h3 {
+    margin: 0 0 20px 0;
     font-family: "Doto", sans-serif;
-    color: var(--default-text);
+    color: var(--highlight-color, #f5c518);
+    font-size: 24px;
+    font-weight: 700;
 }
 
+/* Kontener na listę komentarzy */
 #comments-list {
-    max-height: 250px;
-    overflow-y: auto;
-    margin-bottom: 15px;
-    padding-right: 10px;
-}
-
-.comment-item {
-    background: var(--accent-dark);
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    border: 1px solid var(--accent-light);
-}
-
-.comment-item strong { color: var(--default-text); display: block; font-size: 14px; margin-bottom: 4px; }
-.comment-item p { color: var(--description-color); margin: 0; font-size: 14px; }
-
-/* [Formularz] */
-#comment-form {
+    flex: 1; /* Zajmuje dostępną przestrzeń pionową */
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    width: 100%;
-    margin-top: 10px; 
+    gap: 12px; /* Odstęp między komentarzami */
+    
+    max-height: 350px; /* Maksymalna wysokość */
+    overflow-y: auto; /* Przewijanie pionowe */
+    margin-bottom: 25px;
+    
+    padding-right: 15px; /* Przestrzeń na pasek przewijania */
 }
 
-.form-row {
+/* Styl paska przewijania (scrollbar) dla #comments-list */
+#comments-list::-webkit-scrollbar {
+    width: 6px;
+}
+#comments-list::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 3px;
+}
+#comments-list::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.2);
+}
+
+/* Pojedynczy element komentarza (w szarym bloku) */
+.comment-item {
+    background-color: rgba(255, 255, 255, 0.05); /* Bardzo delikatne, półprzezroczyste tło */
+    border-radius: 8px; /* Zaokrąglone narożniki komentarza */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtelna krawędź */
+    transition: background-color 0.2s ease;
+    
+    /* Estetyczne marginesy wewnątrz komentarza */
+    padding: 15px; 
+}
+
+/* Efekt najechania dla komentarza */
+.comment-item:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Górna linia komentarza (Nazwa i Data) */
+.comment-top {
     display: flex;
-    gap: 10px;
-    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
 }
 
-#comment-form input { flex: 1; }
-
-#comment-form input, #comment-form textarea {
-    background: var(--accent-dark);
-    border: 1px solid var(--accent-light);
-    color: var(--default-text);
-    padding: 10px;
-    border-radius: 6px;
-    font-size: 14px;
+/* Nazwa użytkownika */
+.comment-top strong {
+    color: var(--accent-light, #ff4d4d);
+    font-size: 15px;
+    font-weight: 600;
 }
 
-#comment-form textarea { resize: none; height: 60px; }
-
-#comment-form button {
-    background: #e50914; color: white; border: none;
-    padding: 10px 20px; border-radius: 6px;
-    cursor: pointer; font-weight: bold; transition: 0.2s;
-}
-#comment-form button:hover { background: #b20710; }
-
-/* [Rekomendacje (Podobne)] */
-#recommendations-list {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); 
-    gap: 10px;
+/* Data komentarza */
+.comment-top .comment-date {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
 }
 
-#comment-text {
-    width: 100%;
-    min-height: 80px; 
-    resize: none;     
-}
-
-.rec-item {
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-.rec-item:hover { transform: scale(1.05); }
-
-.rec-item img {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-    display: block; 
-}
-
-#comment-user {
-    flex-grow: 1;
-}
-
-@media (max-width: 768px) {
-    .comments-section {
-        height: auto; 
-        width: 100%;
-    }
-    .recommendations-section {
-        height: auto; 
-    }
-
-    #comments-list {
-        max-height: 200px; 
-        padding-right: 5px;
-    }
-
-    #comment-form {
-        gap: 12px;
-    }
-
-    .form-row {
-        flex-direction: column; 
-        gap: 10px;
-    }
-
-    #comment-form input, 
-    #comment-form textarea {
-        padding: 12px;
-        font-size: 16px; 
-    }
-
-    #comment-form button {
-        width: 100%; 
-        padding: 14px;
-    }
-
-
-    #recommendations-list {
-        grid-template-columns: repeat(2, 1fr); 
-        gap: 12px;
-    }
-
-    .rec-item img {
-        border-radius: 6px;
-    }
+/* Treść komentarza */
+.comment-item p {
+    margin: 0;
+    color: var(--default-text, #ffffff);
+    font-size: 15px;
+    line-height: 1.5;
 }
