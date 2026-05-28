@@ -1,237 +1,264 @@
+/**
+ * details-view.js
+ * Zarządzanie oknem modalnym szczegółów filmu, dynamicznym pobieraniem danych z TMDB oraz komentarzami.
+ * Wersja z naprawionymi marginesami wewnętrznymi (padding) dla treści opinii.
+ */
+
 const detailsOverlay = document.getElementById('movie-details');
 const detailsBody = document.getElementById('details-body');
 const closedetailsBtn = document.getElementById('close-modal'); 
 
-/**
- * Otwiera modal z pełnymi szczegółami filmu i zarządza jego zawartością.
- * Proces działania:
- * 1. Aktywuje warstwę overlay i wyświetla placeholder ładowania.
- * 2. Pobiera szczegółowe metadane filmu z endpointu /movie/{id}.
- * 3. Formatuje dane (czas trwania, gatunki, oceny) i wstrzykuje strukturę HTML.
- * 4. Inicjalizuje podrzędne moduły: listę komentarzy oraz sekcję rekomendacji.
- * @async
- * @param {number|string} id - Unikalny identyfikator filmu w bazie TMDB.
- * @returns {Promise<void>} Obietnica zakończenia renderowania pełnego widoku szczegółów.
- * @throws {Error} Wyrzuca błąd w przypadku niepowodzenia zapytania fetch.
- * @description Funkcja wykorzystuje 'window.currentOpenMovieId' do synchronizacji 
- * stanu aplikacji z formularzem komentarzy (Punkt #19 i #21).
-**/
+// Zmienne stanu - aktualizują się dynamicznie przy otwarciu każdego filmu
+let currentMovieId = ""; 
+let currentMovieTitle = ""; 
 
-async function openDetails(id) { 
-    window.currentOpenMovieId = id;
-    detailsOverlay.classList.add('active');
-    detailsBody.innerHTML = '<p class="loading-msg">Ładowanie szczegółów...</p>';
+/**
+ * Główna funkcja wywoływana przez kliknięcie karty filmu (zgodnie z cards.js)
+ * Pobiera dane o filmie z TMDB i otwiera okno modalne.
+ * @async
+ * @param {number|string} id - Unikalny identyfikator filmu z TMDB
+ */
+async function openDetails(id) {
+    currentMovieId = id;
+
+    // 1. Otwieramy okno i pokazujemy tekst ładowania
+    if (detailsOverlay) {
+        detailsOverlay.style.display = 'flex';
+        detailsOverlay.classList.add('active');
+    }
+    if (detailsBody) {
+        detailsBody.innerHTML = '<p style="padding: 40px; text-align: center; color: #fff;">Wczytywanie szczegółów filmu...</p>';
+    }
 
     try {
         const url = `${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=pl-PL`;
-        const odpowiedz = await fetch(url);
+        const response = await fetch(url);
         
-        if (!odpowiedz.ok) throw new Error("Błąd pobierania szczegółów");
+        if (!response.ok) throw new Error("Nie udało się pobrać szczegółów filmu.");
         
-        const film = await odpowiedz.json();
+        const movie = await response.json();
+        currentMovieTitle = movie.title; // Zapisujemy czysty tytuł do komentarza na profilu
 
-        const poster = film.poster_path ? IMG_BASE_URL + film.poster_path : './assets/placeholder.png';
-        const gatunki = film.genres ? film.genres.map(g => g.name).join(', ') : 'Brak danych';
-        const czas = film.runtime ? film.runtime + ' min' : 'Nieznany czas';
-        const rok = film.release_date ? film.release_date.substring(0, 4) : 'Brak';
-        const ocena = film.vote_average ? film.vote_average.toFixed(1) : 'Brak';
+        const defaultPoster = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/1920px-No-Image-Placeholder.svg.png';
+        const posterPath = movie.poster_path ? (IMG_BASE_URL + movie.poster_path) : defaultPoster;
+        const releaseYear = movie.release_date ? movie.release_date.substring(0, 4) : "Brak danych";
+        const rating = movie.vote_average ? movie.vote_average.toFixed(1) : "0.0";
+        const genres = movie.genres ? movie.genres.map(g => g.name).join(', ') : "Brak danych";
+        const overview = movie.overview || "Brak opisu fabuły w języku polskim.";
 
-        const icons = {
-            calendar: `<svg fill="currentColor" height="18" width="18" viewBox="0 0 24 24"><path d="M21,5V4h-4V3h-2v1H9V3H7v1H3v1H2v16h1v1h18v-1h1V5H21z M20,9H4V7h1V6h2v2h2V6h6v2h2V6h2v1h1V9z M20,19h-1v1H5v-1H4v-8h16V19 z"></path></svg>`,
-            clock: `<svg fill="currentColor" height="18" width="18" viewBox="0 0 24 24"><polygon points="13,11 13,6 11,6 11,13 16,13 16,11"></polygon><path d="M21,5V4h-1V3h-1V2H5v1H4v1H3v1H2v14h1v1h1v1h1v1h14v-1h1v-1h1v-1h1V5H21z M20,17h-1v1h-1v1h-1v1H7v-1H6v-1H5v-1H4V7h1V6h1 V5h1V4h10v1h1v1h1v1h1V17z"></path></svg>`,
-            star: `<svg fill="currentColor" height="18" width="18" viewBox="0 0 24 24"><path d="M16,9V8h-1V6h-1V4h-1V2h-2v2h-1v2H9v2H8v1H2v2h1v1h1v1h1v1h1v4H5v2H4v2h3v-1h2v-1h1v-1h4v1h1v1h2v1h3v-2h-1v-2h-1v-4h1v-1h1 v-1h1v-1h1V9H16z M16,12v1h-1v2h1v2h-2v-1h-4v1H8v-2h1v-2H8v-1H7v-1h3v-1h1V8h2v2h1v1h3v1H16z"/></svg>`
-        };
-
-        detailsBody.innerHTML = `
-            <div class="details-main-info">
-                <img src="${poster}" class="details-poster" alt="${film.title}">
-                <div class="details-info">
-                    <h2 class="details-title">${film.title}</h2>
-                    <div class="details-meta">
-                        ${icons.calendar} &nbsp;${rok}&nbsp;&nbsp;
-                        ${icons.clock} &nbsp;${czas}&nbsp;&nbsp;
-                        ${icons.star} &nbsp;${ocena}
-                    </div>
-                    <p class="details-genres">${gatunki}</p>
-                    <p class="details-overview">${film.overview || 'Ten film nie posiada jeszcze opisu.'}</p>
-                </div>
-            </div>
-            
-            <div class="details-bottom-grid">
-                <div class="comments-section">
-                    <h3>Komentarze</h3>
-                    <div id="comments-list"></div>
-                    <form id="comment-form">
-                        <div class="form-row">
-                            <input type="text" id="comment-user" placeholder="Twoja nazwa..." required>
-                            <button type="submit">Dodaj</button>
+        if (detailsBody) {
+            detailsBody.innerHTML = `
+                <div class="movie-details-layout" style="display: flex; flex-direction: column; gap: 20px; color: #fff; padding: 10px 20px;">
+                    <div class="movie-main-info" style="display: flex; gap: 25px; flex-wrap: wrap;">
+                        <img src="${posterPath}" alt="${movie.title}" style="width: 200px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); object-fit: cover;">
+                        <div style="flex: 1; min-width: 280px;">
+                            <h1 style="font-size: 32px; margin: 0 0 10px 0; font-family: inherit;">${movie.title}</h1>
+                            <p style="margin: 5px 0; opacity: 0.6;"><strong>Rok wydania:</strong> ${releaseYear}</p>
+                            <p style="margin: 5px 0; color: #ffbc0b; display: flex; align-items: center; gap: 5px;">
+                                <strong>Ocena:</strong> ⭐ ${rating} / 10
+                            </p>
+                            <p style="margin: 5px 0; opacity: 0.8;"><strong>Gatunki:</strong> ${genres}</p>
+                            <p style="margin: 15px 0 0 0; line-height: 1.6; font-size: 15px; color: #ddd;">${overview}</p>
                         </div>
-                        <textarea id="comment-text" placeholder="Dodaj opinię o filmie..." required></textarea>
-                        <div id="char-count" style="font-size: 12px; color: gray;">Znaki: 0/10</div>
-                    </form>
-                </div>
-
-                <div class="recommendations-section">
-                    <h3>Podobne filmy</h3>
-                    <div id="recommendations-list">
-                        <p class="small-loading">Ładowanie rekomendacji...</p>
                     </div>
-                </div>
-            </div>
-        `;
-
-        loadComments(id);
-        fetchRecommendations(id);
-
-    } catch (error) {
-        console.error("Błąd modalu:", error);
-        detailsBody.innerHTML = '<p class="error-msg">Przepraszamy, nie udało się pobrać szczegółowych danych o filmie.</p>';
-    }
-}
-
-/**
- * Pobiera i wyświetla listę rekomendowanych filmów (podobnych) dla danego tytułu.
- * @async
- * @param {number|string} id - Unikalny identyfikator filmu bazowego (TMDB ID).
- * @returns {Promise<void>} Obietnica zakończenia renderowania sekcji rekomendacji.
- * @description Funkcja ogranicza wyświetlanie do 6 pierwszych wyników (slice), 
- * zapewniając czytelność interfejsu (UX). Każdy element jest interaktywny 
- * i pozwala na przejście do szczegółów kolejnego filmu (rekurencja interfejsu).
-**/
-async function fetchRecommendations(id) {
-    const recList = document.getElementById('recommendations-list');
-    if (!recList) return;
-
-    try {
-        const url = `${BASE_URL}/movie/${id}/recommendations?api_key=${API_KEY}&language=pl-PL`;
-        const res = await fetch(url);
-        
-        if (!res.ok) throw new Error("Błąd pobierania rekomendacji");
-        
-        const data = await res.json();
-        const movies = data.results.slice(0, 6);
-
-        if (movies.length === 0) {
-            recList.innerHTML = '<p class="no-data-msg">Brak podobnych filmów w bazie.</p>';
-            return;
-        }
-
-        recList.innerHTML = movies.map(movie => {
-            const poster = movie.poster_path ? IMG_BASE_URL + movie.poster_path : './assets/placeholder.png';
-            
-            return `
-                <div class="rec-item" onclick="openDetails(${movie.id})" title="${movie.title}">
-                    <img src="${poster}" alt="${movie.title}">
+                    
+                    <hr style="margin: 30px 0 20px 0; border: 0; border-top: 1px solid #222;">
+                    
+                    <div class="comments-section" style="display: flex; flex-direction: column; gap: 15px;">
+                        <h3 style="font-size: 22px; margin: 0 0 5px 0; color: #ffbc0b;">Opinie społeczności</h3>
+                        
+                        <div id="comments-list" style="display: flex; flex-direction: column; gap: 12px; max-height: 300px; overflow-y: auto; padding-right: 5px;"></div>
+                        
+                        <form id="comment-form" style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+                            <input type="text" id="comment-user" class="search-input" placeholder="Nazwa użytkownika" required style="width: 100%; padding: 12px 15px;">
+                            <textarea id="comment-text" class="search-input" rows="3" placeholder="Co sądzisz o tym filmie? Dodaj swoją opinię..." required style="resize: vertical; font-family: inherit; width: 100%; padding: 12px 15px; min-height: 80px;"></textarea>
+                            <button type="submit" class="auth-submit-btn" style="align-self: flex-start; min-width: 160px; padding: 12px 20px; font-weight: bold;">Dodaj komentarz</button>
+                        </form>
+                    </div>
                 </div>
             `;
-        }).join('');
-        
-    } catch (err) {
-        console.error("Rekomendacje błąd:", err);
-        recList.innerHTML = '<p class="error-small">Nie udało się załadować podobnych filmów.</p>';
+        }
+
+        window.setupCommentFormAuth();
+        renderMovieComments(currentMovieId);
+        rebindCommentFormSubmit();
+
+    } catch (error) {
+        console.error("Błąd ładowania szczegółów modala:", error);
+        if (detailsBody) {
+            detailsBody.innerHTML = '<p style="padding: 40px; text-align: center; color: #e50914;">Nie udało się załadować danych tego filmu. Spróbuj ponownie później.</p>';
+        }
     }
 }
 
+// Udostępniamy funkcję globalnie dla cards.js
+window.openDetails = openDetails;
 
 /**
- * Sekcja: Obsługa zamykania modalu szczegółów (Modal Close Handlers).
- * * Zapewnia trzy niezależne sposoby wyjścia z widoku szczegółów (UX/Accessibility):
- * 1. Kliknięcie w dedykowany przycisk zamknięcia (X).
- * 2. Kliknięcie w ciemne tło (overlay) poza obszarem treści modalu.
- * 3. Naciśnięcie klawisza 'Escape' na klawiaturze (Punkt #23 - Dostępność).
- * * @description Wykorzystuje manipulację klasami CSS (.remove('active')) 
- * do ukrycia elementu w drzewie DOM.
-**/
-
-closedetailsBtn.addEventListener('click', () => {
-    detailsOverlay.classList.remove('active');
-});
-
-detailsOverlay.addEventListener('click', (event) => {
-    if (event.target === detailsOverlay) {
+ * Zamyka okno modalne szczegółów filmu
+ */
+function closeMovieDetails() {
+    if (detailsOverlay) {
         detailsOverlay.classList.remove('active');
+        detailsOverlay.style.display = 'none';
     }
-});
+}
 
-document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && detailsOverlay.classList.contains('active')) {
-        detailsOverlay.classList.remove('active');
-    }
-});
+// Obsługa przycisku zamknięcia X
+if (closedetailsBtn) {
+    closedetailsBtn.addEventListener('click', closeMovieDetails);
+}
+
+// Zamknięcie po kliknięciu w tło poza okno modalne
+if (detailsOverlay) {
+    detailsOverlay.addEventListener('click', (e) => {
+        if (e.target === detailsOverlay) {
+            closeMovieDetails();
+        }
+    });
+}
 
 /**
- * Pobiera komentarze z pamięci przeglądarki i renderuje je w bezpieczny sposób.
- * Proces działania:
- * 1. Odczytuje dane z LocalStorage i parsuje je z formatu JSON.
- * 2. Filtruje komentarze, aby wyświetlić tylko te przypisane do danego filmu.
- * 3. Tworzy elementy DOM i używa .textContent, aby zapobiec atakom XSS.
- * @param {string|number} movieId - Unikalny identyfikator filmu, będący kluczem w bazie komentarzy.
- * @returns {void}
- * @description Funkcja realizuje punkt #12 (LocalStorage) oraz punkt #20 (Bezpieczeństwo danych).
-**/
+ * Funkcja zarządzająca uprawnieniami formularza komentarzy pod filmem
+ */
+window.setupCommentFormAuth = function() {
+    const commentUserInput = document.getElementById('comment-user');
+    const commentTextArea = document.getElementById('comment-text');
+    const commentButton = document.querySelector('#comment-form button');
+    const currentUser = localStorage.getItem('currentUser');
 
-function loadComments(movieId) {
-    const list = document.getElementById('comments-list');
-    if (!list) return;
+    if (!commentUserInput) return;
 
-    list.innerHTML = '';
+    if (currentUser) {
+        commentUserInput.value = currentUser;
+        commentUserInput.readOnly = true;
+        commentUserInput.style.opacity = "0.7";
+        commentUserInput.style.cursor = "not-allowed";
+        
+        if (commentTextArea) commentTextArea.disabled = false;
+        if (commentButton) {
+            commentButton.disabled = false;
+            commentButton.textContent = "Dodaj komentarz";
+            commentButton.style.background = "#e50914";
+            commentButton.style.cursor = "pointer";
+        }
+    } else {
+        commentUserInput.value = "";
+        commentUserInput.placeholder = "Musisz się zalogować";
+        commentUserInput.readOnly = true;
+        commentUserInput.style.opacity = "1";
+        commentUserInput.style.cursor = "inherit";
+        
+        if (commentTextArea) {
+            commentTextArea.disabled = true;
+            commentTextArea.placeholder = "Zaloguj się na swoje konto, aby móc dodawać opinie o filmach.";
+        }
+        if (commentButton) {
+            commentButton.disabled = true;
+            commentButton.textContent = "Zaloguj się aby napisać";
+            commentButton.style.background = "#555";
+            commentButton.style.cursor = "not-allowed";
+        }
+    }
+};
 
-    const store = localStorage.getItem('movie_comments');
-    const allComments = JSON.parse(store) || {};
-    
-    const movieComments = allComments[movieId] || [];
+/**
+ * Wyświetlanie listy opinii pod wybranym filmem (Z poprawionym odstępem od krawędzi)
+ */
+function renderMovieComments(movieId) {
+    const commentsList = document.getElementById('comments-list');
+    if (!commentsList) return;
+
+    commentsList.innerHTML = '';
+    const allGlobalComments = JSON.parse(localStorage.getItem('kf_global_comments')) || {};
+    const movieComments = allGlobalComments[movieId] || [];
 
     if (movieComments.length === 0) {
-        list.innerHTML = '<p class="no-comments">Brak komentarzy. Bądź pierwszy!</p>';
+        commentsList.innerHTML = '<p style="color: #888; font-size: 14px; padding: 15px 5px; opacity: 0.7;">Brak komentarzy. Bądź pierwszą osobą, która oceni ten film!</p>';
         return;
     }
 
-    for (let i = 0; i < movieComments.length; i++) {
-        const c = movieComments[i];
-        
+    movieComments.forEach(comment => {
         const div = document.createElement('div');
         div.className = 'comment-item';
+        
+        // KLUCZOWA POPRAWKA: solidny padding wewnątrz ramki odsuwający tekst od krawędzi
+        div.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+        div.style.border = '1px solid rgba(255, 255, 255, 0.08)';
+        div.style.borderRadius = '8px';
+        div.style.padding = '15px 25px'; 
+        div.style.marginBottom = '4px';
 
-        div.innerHTML = `<strong></strong><p></p>`;
-        div.querySelector('strong').textContent = c.user;
-        div.querySelector('p').textContent = c.text;
-
-        list.appendChild(div);
-    }
+        div.innerHTML = `
+            <div class="comment-top" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; width: 100%;">
+                <strong style="color: #ff4d4d; font-size: 15px; font-weight: 600;">${comment.author}</strong>
+                <span class="comment-date" style="opacity: 0.5; font-size: 12px;">${comment.date}</span>
+            </div>
+            <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #eee; text-align: left; width: 100%; word-break: break-word;">${comment.text}</p>
+        `;
+        commentsList.appendChild(div);
+    });
 }
 
 /**
- * Globalny słuchacz zdarzenia 'submit' obsługujący formularz komentarzy.
- * Realizuje proces zapisu opinii w pamięci LocalStorage:
- * 1. Blokuje domyślne przeładowanie strony (e.preventDefault).
- * 2. Pobiera aktualne ID filmu i dane z pól formularza.
- * 3. Serializuje dane do formatu JSON i zapisuje je w magazynie przeglądarki.
- * 4. Odświeża widok listy komentarzy i resetuje pola formularza.
- * @param {Event} e - Obiekt zdarzenia wysłania formularza.
- * @returns {void}
- * @description Wykorzystuje metodę 'unshift', aby najnowsze komentarze 
- * trafiały na szczyt listy (Punkt #12 - LocalStorage).
-**/
+ * Podwiązuje zdarzenie wysyłania formularza komentarzy
+ */
+function rebindCommentFormSubmit() {
+    const commentForm = document.getElementById('comment-form');
+    if (!commentForm) return;
 
-document.addEventListener('submit', (e) => {
-    if (e.target && e.target.id === 'comment-form') {
+    commentForm.replaceWith(commentForm.cloneNode(true));
+    const freshForm = document.getElementById('comment-form');
+    
+    freshForm.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        const movieId = window.currentOpenMovieId;
-        const userInput = document.getElementById('comment-user');
-        const textInput = document.getElementById('comment-text');
+        const currentUser = localStorage.getItem('currentUser');
+        const commentText = document.getElementById('comment-text').value.trim();
 
-        const allComments = JSON.parse(localStorage.getItem('movie_comments')) || {};
-        if (!allComments[movieId]) allComments[movieId] = [];
+        if (!currentUser || !commentText || !currentMovieId) return;
 
-        allComments[movieId].unshift({
-            user: userInput.value,
-            text: textInput.value
-        });
+        const now = new Date();
+        const formattedDate = `${now.getDate().toString().padStart(2, '0')}.${(now.getMonth() + 1).toString().padStart(2, '0')}.${now.getFullYear()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
-        localStorage.setItem('movie_comments', JSON.stringify(allComments));
+        const newComment = {
+            movieId: currentMovieId,
+            movieTitle: currentMovieTitle, 
+            author: currentUser,
+            text: commentText,
+            date: formattedDate
+        };
+
+        // 1. Zapis globalny filmu
+        let allGlobalComments = JSON.parse(localStorage.getItem('kf_global_comments')) || {};
+        if (!allGlobalComments[currentMovieId]) allGlobalComments[currentMovieId] = [];
+        allGlobalComments[currentMovieId].push(newComment);
+        localStorage.setItem('kf_global_comments', JSON.stringify(allGlobalComments));
+
+        // 2. Zapis w profilu użytkownika
+        let users = JSON.parse(localStorage.getItem('kf_users')) || [];
+        const userIndex = users.findIndex(u => u.username.toLowerCase() === currentUser.toLowerCase());
         
-        loadComments(movieId); 
-        e.target.reset(); 
+        if (userIndex !== -1) {
+            if (!users[userIndex].comments) users[userIndex].comments = [];
+            users[userIndex].comments.push(newComment);
+            localStorage.setItem('kf_users', JSON.stringify(users));
+        }
+
+        // 3. Czyszczenie pola tekstowego i natychmiastowy update listy
+        document.getElementById('comment-text').value = '';
+        renderMovieComments(currentMovieId);
+        
+        if (typeof window.loadUserComments === 'function') {
+            window.loadUserComments();
+        }
+    });
+}
+
+// Pierwsza inicjalizacja przy załadowaniu drzewa DOM
+document.addEventListener('DOMContentLoaded', () => {
+    window.setupCommentFormAuth();
+    if (currentMovieId) {
+        renderMovieComments(currentMovieId);
     }
 });

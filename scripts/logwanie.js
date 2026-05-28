@@ -19,175 +19,167 @@ document.addEventListener('DOMContentLoaded', () => {
     const profileStatus = document.getElementById('profile-status');
     const logoutBtn = document.getElementById('logout-btn');
 
-    // =========================
-    // AKTUALIZACJA UI
-    // =========================
-
+    // ==========================================
+    // AKTUALIZACJA INTERFEJSU (UI)
+    // ==========================================
     function updateUI() {
-
         const currentUser = localStorage.getItem('currentUser');
 
-        // DOMYŚLNIE UKRYJ PROFIL
         if (profileBtn) {
             profileBtn.parentElement.style.display = "none";
         }
 
         if (currentUser) {
+            if (profileBtn) profileBtn.parentElement.style.display = "block";
+            if (loginBtn) loginBtn.parentElement.style.display = "none";
+            if (registerBtn) registerBtn.parentElement.style.display = "none";
 
-            // POKAŻ PROFIL
-            if (profileBtn) {
-                profileBtn.parentElement.style.display = "block";
-            }
-
-            // UKRYJ LOGOWANIE I REJESTRACJĘ
-            if (loginBtn) {
-                loginBtn.parentElement.style.display = "none";
-            }
-
-            if (registerBtn) {
-                registerBtn.parentElement.style.display = "none";
-            }
-
-            // DANE PROFILU
-            if (profileName) {
-                profileName.textContent = currentUser;
-            }
-
-            if (profileStatus) {
-                profileStatus.textContent = "Jesteś zalogowany.";
-            }
-
-            if (logoutBtn) {
-                logoutBtn.style.display = "inline-block";
-            }
+            if (profileName) profileName.textContent = currentUser;
+            if (profileStatus) profileStatus.textContent = "Jesteś zalogowany.";
+            if (logoutBtn) logoutBtn.style.display = "inline-block";
 
         } else {
+            if (loginBtn) loginBtn.parentElement.style.display = "block";
+            if (registerBtn) registerBtn.parentElement.style.display = "block";
+            if (profileBtn) profileBtn.parentElement.style.display = "none";
 
-            // POKAŻ LOGOWANIE I REJESTRACJĘ
-            if (loginBtn) {
-                loginBtn.parentElement.style.display = "block";
-            }
+            if (profileName) profileName.textContent = "Nie jesteś zalogowany";
+            if (profileStatus) profileStatus.textContent = "Zaloguj się aby korzystać z profilu.";
+            if (logoutBtn) logoutBtn.style.display = "none";
+        }
 
-            if (registerBtn) {
-                registerBtn.parentElement.style.display = "block";
-            }
-
-            // UKRYJ PROFIL
-            if (profileBtn) {
-                profileBtn.parentElement.style.display = "none";
-            }
-
-            // PROFIL OFFLINE
-            if (profileName) {
-                profileName.textContent = "Nie jesteś zalogowany";
-            }
-
-            if (profileStatus) {
-                profileStatus.textContent = "Zaloguj się aby korzystać z profilu.";
-            }
-
-            if (logoutBtn) {
-                logoutBtn.style.display = "none";
-            }
+        // Informujemy formularz recenzji filmu o zmianie statusu sesji
+        if (typeof window.setupCommentFormAuth === 'function') {
+            window.setupCommentFormAuth();
         }
     }
 
     updateUI();
 
-    // =========================
-    // REJESTRACJA
-    // =========================
+    // ==========================================
+    // OBSŁUGA PODGLĄDU HASŁA (OKO 👁️)
+    // ==========================================
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const passwordInput = document.getElementById(targetId);
+            
+            if (passwordInput) {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    this.textContent = '🙈';
+                } else {
+                    passwordInput.type = 'password';
+                    this.textContent = '👁️';
+                }
+            }
+        });
+    });
 
+    // ==========================================
+    // REJESTRACJA (Login, Email, Hasło, Powtórz)
+    // ==========================================
     const regForm = document.getElementById('registerForm');
 
     if (regForm) {
-
         regForm.addEventListener('submit', (e) => {
-
             e.preventDefault();
 
             const user = document.getElementById('regUser').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
             const pass = document.getElementById('regPass').value;
-
+            const passConfirm = document.getElementById('regPassConfirm').value;
             const msg = document.getElementById('register-message');
 
-            let users = getUsers();
-
-            if (users.find(u => u.username === user)) {
-
-                msg.textContent = "Użytkownik już istnieje!";
+            // 1. Sprawdzenie zgodności haseł
+            if (pass !== passConfirm) {
+                msg.textContent = "Hasła nie są identyczne!";
                 msg.style.color = "red";
-
                 return;
             }
 
+            let users = getUsers();
+
+            // 2. Sprawdzenie unikalności loginu i emaila
+            if (users.find(u => u.username.toLowerCase() === user.toLowerCase())) {
+                msg.textContent = "Użytkownik o takim loginie już istnieje!";
+                msg.style.color = "red";
+                return;
+            }
+
+            if (users.find(u => u.email && u.email.toLowerCase() === email.toLowerCase())) {
+                msg.textContent = "Ten adres e-mail jest już zajęty!";
+                msg.style.color = "red";
+                return;
+            }
+
+            // 3. Zapis nowego użytkownika z pustą tablicą komentarzy
             users.push({
                 username: user,
-                password: pass
+                email: email,
+                password: pass,
+                comments: []
             });
 
             saveUsers(users);
 
-            msg.textContent = "Konto utworzone!";
+            msg.textContent = "Konto utworzone pomyślnie!";
             msg.style.color = "lime";
-
             regForm.reset();
         });
     }
 
-    // =========================
+    // ==========================================
     // LOGOWANIE
-    // =========================
-
+    // ==========================================
     const loginForm = document.getElementById('loginForm');
 
     if (loginForm) {
-
         loginForm.addEventListener('submit', (e) => {
-
             e.preventDefault();
 
             const user = document.getElementById('loginUser').value.trim();
             const pass = document.getElementById('loginPass').value;
-
             const msg = document.getElementById('login-message');
 
             let users = getUsers();
 
             const foundUser = users.find(
-                u => u.username === user && u.password === pass
+                u => u.username.toLowerCase() === user.toLowerCase() && u.password === pass
             );
 
             if (foundUser) {
+                localStorage.setItem('currentUser', foundUser.username);
 
-                localStorage.setItem('currentUser', user);
-
-                msg.textContent = `Witaj ${user}!`;
+                msg.textContent = `Witaj ${foundUser.username}!`;
                 msg.style.color = "lime";
 
-                // ODŚWIEŻENIE
-                location.reload();
+                updateUI();
+                
+                // Odświeżenie sekcji komentarzy na profilu
+                if (typeof window.loadUserComments === 'function') {
+                    window.loadUserComments();
+                }
 
+                loginForm.reset();
             } else {
-
                 msg.textContent = "Błędne dane logowania.";
                 msg.style.color = "red";
             }
         });
     }
 
-    // =========================
+    // ==========================================
     // WYLOGOWANIE
-    // =========================
-
+    // ==========================================
     if (logoutBtn) {
-
         logoutBtn.addEventListener('click', () => {
-
             localStorage.removeItem('currentUser');
-
-            // ODŚWIEŻ STRONĘ
-            location.reload();
+            updateUI();
+            
+            if (typeof window.loadUserComments === 'function') {
+                window.loadUserComments();
+            }
         });
     }
 });
