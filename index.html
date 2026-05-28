@@ -5,16 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KultuFilms</title>
 
-    <!-- Czcionki -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Doto:wght@100..900&family=Monoton&display=swap" rel="stylesheet">
         
-    <!-- Ikonka strony -->
     <link rel="shortcut icon" href="./favicon/favicon.ico" type="image/x-icon">
     <link rel="icon" type="image/png" href="./favicon/favicon-96x96.png" sizes="96x96">
 
-    <!-- CSS -->
     <link rel="stylesheet" href="./css/main.css">
     <link rel="stylesheet" href="./css/sidebar.css">
     <link rel="stylesheet" href="./css/banner.css">
@@ -25,7 +22,6 @@
     <link rel="stylesheet" href="./css/details-view.css">
     <link rel="stylesheet" href="./css/login.css">
 
-    <!-- JS -->
     <script src="./scripts/main.js" defer></script> 
     <script src="./scripts/sidebar.js" defer></script> 
     <script src="./scripts/cards.js" defer></script> 
@@ -35,6 +31,7 @@
     <script src="./scripts/best.js" defer></script>
     <script src="./scripts/details-view.js" defer></script>
     <script src="./scripts/logwanie.js" defer></script>
+    <script src="./scripts/comments.js" defer></script>
 
 </head>
 
@@ -71,35 +68,31 @@
                 </li>
                 <hr>
                 <li>
-    <button class="nav-btn" data-view="login">
-        <svg width="32" height="32" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a5 5 0 1 0 5 5 5 5 0 0 0-5-5Zm0 8a3 3 0 1 1 3-3 3 3 0 0 1-3 3Zm9 11v-1a7 7 0 0 0-7-7h-4a7 7 0 0 0-7 7v1h2v-1a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v1h2Z" fill="currentColor"/></svg>
-        <p>Zaloguj się</p>
-    </button>
-    
-</li>
-<li>
-    <button class="nav-btn" data-view="profile">
-        <svg width="32" height="32" fill="none" viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z"
-            fill="currentColor"/>
-        </svg>
-        <p>Profil</p>
-    </button>
-</li>
-<li>
-    <button class="nav-btn" data-view="register">
-        <svg width="32" height="32" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15 4a4 4 0 1 1-4 4 4 4 0 0 1 4-4Zm0 6a2 2 0 1 0-2-2 2 2 0 0 0 2 2ZM5 10V7H3v3H0v2h3v3h2v-3h3v-2H5Zm19 11v-1a7 7 0 0 0-7-7h-4a7 7 0 0 0-2.39.42 5 5 0 0 1 3.33 5.37l.06 1.21h6ZM11 21v-1a5 5 0 0 1 3.25-4.66 7 7 0 0 0-5.46-.3l-.33.13A5 5 0 0 0 5.06 20l-.06 1h6Z" fill="currentColor"/></svg>
-        <p>Rejestracja</p>
-    </button>
-</li>
+                    <button class="nav-btn" data-view="login">
+                        <svg width="32" height="32" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a5 5 0 1 0 5 5 5 5 0 0 0-5-5Zm0 8a3 3 0 1 1 3-3 3 3 0 0 1-3 3Zm9 11v-1a7 7 0 0 0-7-7h-4a7 7 0 0 0-7 7v1h2v-1a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v1h2Z" fill="currentColor"/></svg>
+                        <p>Zaloguj się</p>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn" data-view="profile">
+                        <svg width="32" height="32" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z" fill="currentColor"/>
+                        </svg>
+                        <p>Profil</p>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn" data-view="register">
+                        <svg width="32" height="32" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15 4a4 4 0 1 1-4 4 4 4 0 0 1 4-4Zm0 6a2 2 0 1 0-2-2 2 2 0 0 0 2 2ZM5 10V7H3v3H0v2h3v3h2v-3h3v-2H5Zm19 11v-1a7 7 0 0 0-7-7h-4a7 7 0 0 0-2.39.42 5 5 0 0 1 3.33 5.37l.06 1.21h6ZM11 21v-1a5 5 0 0 1 3.25-4.66 7 7 0 0 0-5.46-.3l-.33.13A5 5 0 0 0 5.06 20l-.06 1h6Z" fill="currentColor"/></svg>
+                        <p>Rejestracja</p>
+                    </button>
+                </li>
                 <hr>
                 <li class="settings-container">
                     <button class="nav-btn" id="settings-btn">
                         <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 C9.64,21.83,9.83,22,10.08,22h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
                         </svg>
-                        
                         <p>Ustawienia</p>
                     </button>
 
@@ -109,7 +102,6 @@
                         <button class="dropdown-item" id="lang-toggle">Język: PL</button>
                     </div>
                 </li>
-
             </ul>
         </nav>
     </aside>
@@ -181,59 +173,66 @@
                 <div class="movie-grid" id="top50-results"></div>
             </section>
         </div>
-        <!-- Widok Logowania -->
-<div id="view-login" class="view-section">
-    <section class="dynamic-page">
-        <p class="title">Zaloguj się do KultuFilms</p>
-        <div class="auth-container">
-            <form id="loginForm">
-                <input type="text" id="loginUser" class="search-input" placeholder="Nazwa użytkownika" required>
-                <input type="password" id="loginPass" class="search-input" placeholder="Hasło" required style="margin-top: 10px;">
-                <button type="submit" class="auth-submit-btn">Zaloguj</button>
-            </form>
-            <div id="login-message" class="auth-msg"></div>
+
+        <div id="view-login" class="view-section">
+            <section class="dynamic-page">
+                <p class="title">Zaloguj się do KultuFilms</p>
+                <div class="auth-container">
+                    <form id="loginForm">
+                        <input type="text" id="loginUser" class="search-input" placeholder="Nazwa użytkownika" required>
+                        <input type="password" id="loginPass" class="search-input" placeholder="Hasło" required style="margin-top: 10px;">
+                        <button type="submit" class="auth-submit-btn">Zaloguj</button>
+                    </form>
+                    <div id="login-message" class="auth-msg"></div>
+                </div>
+            </section>
         </div>
-    </section>
-</div>
 
-<!-- Widok Rejestracji -->
-<div id="view-register" class="view-section">
-    <section class="dynamic-page">
-        <p class="title">Stwórz nowe konto</p>
-        <div class="auth-container">
-            <form id="registerForm">
-                <input type="text" id="regUser" class="search-input" placeholder="Wybierz login" required>
-                <input type="password" id="regPass" class="search-input" placeholder="Wybierz hasło" required style="margin-top: 10px;">
-                <button type="submit" class="auth-submit-btn">Zarejestruj się</button>
-            </form>
-            <div id="register-message" class="auth-msg"></div>
+        <div id="view-register" class="view-section">
+            <section class="dynamic-page">
+                <p class="title">Stwórz nowe konto</p>
+                <div class="auth-container">
+                    <form id="registerForm">
+                        <input type="text" id="regUser" class="search-input" placeholder="Wybierz login" required>
+                        <input type="email" id="regEmail" class="search-input" placeholder="Wpisz adres e-mail" required style="margin-top: 10px;">
+                        
+                        <div class="password-container" style="position: relative; margin-top: 10px;">
+                            <input type="password" id="regPass" class="search-input" placeholder="Wybierz hasło" required style="width: 100%; padding-right: 40px;">
+                            <button type="button" class="toggle-password" data-target="regPass" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 16px;">👁️</button>
+                        </div>
+
+                        <div class="password-container" style="position: relative; margin-top: 10px;">
+                            <input type="password" id="regPassConfirm" class="search-input" placeholder="Powtórz hasło" required style="width: 100%; padding-right: 40px;">
+                            <button type="button" class="toggle-password" data-target="regPassConfirm" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 16px;">👁️</button>
+                        </div>
+
+                        <button type="submit" class="auth-submit-btn" style="margin-top: 15px;">Zarejestruj się</button>
+                    </form>
+                    <div id="register-message" class="auth-msg"></div>
+                </div>
+            </section>
         </div>
-    </section>
 
-</div>
-<!-- Widok Profilu -->
-<div id="view-profile" class="view-section">
-    <section class="dynamic-page">
-        <p class="title">Profil użytkownika</p>
-
-        <div class="profile-container">
-            <h2 id="profile-name">Nie jesteś zalogowany</h2>
-
-            <p id="profile-status"></p>
-
-            <button id="logout-btn" class="auth-submit-btn">
-                Wyloguj się
-            </button>
+        <div id="view-profile" class="view-section">
+            <section class="dynamic-page">
+                <p class="title">Profil użytkownika</p>
+                <div class="profile-container">
+                    <h2 id="profile-name">Nie jesteś zalogowany</h2>
+                    <hr>
+                    <h3>Twoje komentarze</h3>
+                    <div id="profile-comments"></div>
+                    <button id="logout-btn" class="auth-submit-btn">
+                        Wyloguj się
+                    </button>
+                </div>
+            </section>
         </div>
-    </section>
-</div>
     </main>
+
     <div id="movie-details" class="details-overlay">
         <div class="details-content">
             <button id="close-modal" class="close-btn">&times;</button>
-            <div class="details-body" id="details-body">
-                
-            </div>
+            <div class="details-body" id="details-body"></div>
         </div>
     </div>
 </body>
